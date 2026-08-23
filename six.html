@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Move. Learn. Bloom.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif; }
+        body { background-color: #f5f0eb; color: #2d2a24; padding: 16px 14px 40px; max-width: 520px; margin: 0 auto; }
+        
+        /* ===== 全新標題 ===== */
+        .app-header { 
+            text-align: center; 
+            margin-bottom: 18px; 
+            padding: 12px 0 8px;
+            background: linear-gradient(135deg, #fcf8f4 0%, #f5f0eb 100%);
+            border-radius: 32px;
+        }
+        .app-header h1 { 
+            font-size: 28px; 
+            font-weight: 800; 
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #E8485B 0%, #EC407A 40%, #2196F3 70%, #4CAF50 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        .app-header h1 i { 
+            -webkit-text-fill-color: initial;
+            color: #c79a6e; 
+            font-size: 26px; 
+            margin-right: 6px;
+        }
+        .app-header .sub { 
+            font-size: 14px; 
+            color: #5a4e42; 
+            background: rgba(255,255,255,0.7);
+            display: inline-block; 
+            padding: 4px 20px; 
+            border-radius: 30px; 
+            margin-top: 4px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(200,180,165,0.3);
+        }
+        .app-header .tagline {
+            font-size: 12px;
+            color: #8a7a6a;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+        .app-header .tagline span { 
+            display: inline-block; 
+            margin: 0 6px; 
+        }
+        .app-header .tagline .move { color: #E8485B; font-weight: 600; }
+        .app-header .tagline .learn { color: #2196F3; font-weight: 600; }
+        .app-header .tagline .bloom { color: #4CAF50; font-weight: 600; }
+
+        /* ===== 其餘樣式與之前相同 ===== */
+        .tab-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .tab-btn {
+            background: white;
+            border: 2px solid #e2dad2;
+            border-radius: 40px;
+            padding: 10px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: #5f5345;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-btn i { margin-right: 6px; }
+        .tab-btn.active { border-color: #c79a6e; background: #fcf8f4; color: #2d2a24; }
+        .tab-btn:active { transform: scale(0.96); }
+
+        .district-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .district-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px 6px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 3px solid #e2dad2;
+            cursor: pointer;
+            transition: 0.25s;
+            font-weight: 600;
+            font-size: 14px;
+            color: #3d352c;
+            position: relative;
+        }
+        .district-card i { display: block; font-size: 26px; margin-bottom: 4px; transition: 0.3s; }
+        .district-card .badge { font-size: 10px; font-weight: 400; background: #e8dfd7; padding: 1px 10px; border-radius: 30px; display: inline-block; margin-top: 3px; color: #4f453a; }
+        .district-card .progress-dot { display: block; font-size: 11px; margin-top: 4px; font-weight: 500; }
+        .district-card.active { transform: scale(1.03); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+        .district-card.completed { opacity: 0.9; }
+        .district-card.partial { opacity: 0.95; }
+
+        .district-tst { border-color: #E8485B; }
+        .district-tst i { color: #E8485B; }
+        .district-tst.active { border-color: #E8485B; background: #FCE8EA; box-shadow: 0 6px 18px rgba(232,72,91,0.25); }
+        .district-tst .progress-dot { color: #E8485B; }
+
+        .district-kc { border-color: #F5A623; }
+        .district-kc i { color: #F5A623; }
+        .district-kc.active { border-color: #F5A623; background: #FEF3E0; box-shadow: 0 6px 18px rgba(245,166,35,0.25); }
+        .district-kc .progress-dot { color: #F5A623; }
+
+        .district-southern { border-color: #2196F3; }
+        .district-southern i { color: #2196F3; }
+        .district-southern.active { border-color: #2196F3; background: #E3F2FD; box-shadow: 0 6px 18px rgba(33,150,243,0.25); }
+        .district-southern .progress-dot { color: #2196F3; }
+
+        .district-ssp { border-color: #9C27B0; }
+        .district-ssp i { color: #9C27B0; }
+        .district-ssp.active { border-color: #9C27B0; background: #F3E5F5; box-shadow: 0 6px 18px rgba(156,39,176,0.25); }
+        .district-ssp .progress-dot { color: #9C27B0; }
+
+        .district-sk { border-color: #4CAF50; }
+        .district-sk i { color: #4CAF50; }
+        .district-sk.active { border-color: #4CAF50; background: #E8F5E9; box-shadow: 0 6px 18px rgba(76,175,80,0.25); }
+        .district-sk .progress-dot { color: #4CAF50; }
+
+        .district-tp { border-color: #FF6F00; }
+        .district-tp i { color: #FF6F00; }
+        .district-tp.active { border-color: #FF6F00; background: #FFF3E0; box-shadow: 0 6px 18px rgba(255,111,0,0.25); }
+        .district-tp .progress-dot { color: #FF6F00; }
+
+        .district-card.completed { border-color: #28a745 !important; }
+        .district-card.completed i { color: #28a745 !important; }
+        .district-card.completed .progress-dot { color: #28a745 !important; }
+        .district-card.completed.active { background: #f0f8f0 !important; box-shadow: 0 6px 18px rgba(40,167,69,0.25) !important; }
+
+        .route-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .route-card {
+            background: white;
+            border-radius: 14px;
+            padding: 10px 4px;
+            text-align: center;
+            border: 2px solid #e2dad2;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+            font-size: 12px;
+            color: #3d352c;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .route-card i { display: block; font-size: 20px; margin-bottom: 2px; color: #8a7a6a; }
+        .route-card .badge { font-size: 9px; font-weight: 400; background: #e8dfd7; padding: 1px 8px; border-radius: 30px; display: inline-block; margin-top: 2px; color: #4f453a; }
+        .route-card.active { border-color: #c79a6e; background: #fcf8f4; }
+        .route-card:active { transform: scale(0.94); }
+
+        .map-container { background: #d9d2c9; border-radius: 28px; padding: 16px 14px 14px; margin-bottom: 16px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.08); }
+        .map-title { font-weight: 600; font-size: 14px; color: #2d2a24; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .map-grid { background: #eae3da; border-radius: 20px; padding: 12px 10px; min-height: 180px; background-image: linear-gradient(rgba(200,185,170,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(200,185,170,0.2) 1px, transparent 1px); background-size: 20px 20px; }
+        .map-pin {
+            background: white;
+            border-radius: 30px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid #c79a6e;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .map-pin .pin-icon { font-size: 18px; color: #1a3c4a; width: 24px; text-align: center; }
+        .map-pin .pin-info { flex: 1; }
+        .map-pin .pin-name { font-weight: 600; font-size: 14px; }
+        .map-pin .pin-desc { font-size: 11px; color: #5f5345; display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 1px; }
+        .facility-tags { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 4px 0 2px; font-size: 10px; color: #2d4b4f; }
+        .facility-tags i { margin-right: 2px; }
+        .wheelchair-tip { background: #e1eef0; border-radius: 30px; padding: 2px 10px; font-size: 10px; display: inline-flex; align-items: center; gap: 4px; color: #005566; margin-top: 2px; }
+        .pet-tip { background: #d4edda; border-radius: 30px; padding: 2px 10px; font-size: 10px; display: inline-flex; align-items: center; gap: 4px; color: #155724; margin-top: 2px; }
+        .pet-tip.caution { background: #fff3cd; color: #856404; }
+        .pet-tip.no { background: #f8d7da; color: #721c24; }
+        .stamp-btn {
+            background: #1a3c4a;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .stamp-btn:active { transform: scale(0.92); }
+        .stamp-btn:disabled { cursor: default; opacity: 0.7; }
+        .stamp-btn.tst-btn { background: #E8485B; }
+        .stamp-btn.tst-btn.stamped { background: #c0392b; }
+        .stamp-btn.kc-btn { background: #F5A623; }
+        .stamp-btn.kc-btn.stamped { background: #d4891b; }
+        .stamp-btn.southern-btn { background: #2196F3; }
+        .stamp-btn.southern-btn.stamped { background: #1976D2; }
+        .stamp-btn.ssp-btn { background: #9C27B0; }
+        .stamp-btn.ssp-btn.stamped { background: #7B1FA2; }
+        .stamp-btn.sk-btn { background: #4CAF50; }
+        .stamp-btn.sk-btn.stamped { background: #388E3C; }
+        .stamp-btn.tp-btn { background: #FF6F00; }
+        .stamp-btn.tp-btn.stamped { background: #E65100; }
+        .stamp-btn.stamped { background: #c79a6e; }
+
+        .progress-area { background: white; border-radius: 24px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin: 8px 0 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .progress-area .count { font-weight: 700; font-size: 17px; color: #1a3c4a; }
+        .progress-area .count span { color: #c79a6e; }
+        .progress-bar-bg { width: 100%; height: 5px; background: #e2dad2; border-radius: 20px; margin-top: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 20px; width: 0%; transition: 0.4s; }
+
+        #overviewPanel { display: none; }
+        #overviewPanel .overview-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        #overviewPanel .stat-box { background: white; border-radius: 16px; padding: 14px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        #overviewPanel .stat-box .num { font-size: 28px; font-weight: 700; color: #1a3c4a; }
+        #overviewPanel .stat-box .label { font-size: 12px; color: #6b5e4e; margin-top: 2px; }
+        #overviewPanel .district-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #overviewPanel .district-item {
+            background: white;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border-left: 4px solid #d9d2c9;
+            transition: 0.2s;
+        }
+        #overviewPanel .district-item .name { font-weight: 600; font-size: 14px; }
+        #overviewPanel .district-item .progress-text { font-size: 13px; color: #5f5345; }
+        #overviewPanel .district-item .mini-bar { width: 60px; height: 4px; background: #e2dad2; border-radius: 10px; margin-top: 2px; overflow: hidden; }
+        #overviewPanel .district-item .mini-bar .fill { height: 100%; border-radius: 10px; transition: 0.4s; }
+
+        .legend { display: flex; flex-wrap: wrap; gap: 6px 12px; background: white; padding: 8px 12px; border-radius: 40px; font-size: 10px; color: #3d3a34; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-top: 6px; }
+        .legend i { margin-right: 2px; color: #2d5f6b; }
+        .toast-message { background: #1a3c4a; color: white; padding: 10px 16px; border-radius: 60px; text-align: center; font-weight: 500; margin: 12px 0 4px; font-size: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); display: none; }
+        .toast-message.show { display: block; }
+        .back-hint { text-align: center; font-size: 11px; color: #8a7a6a; margin-top: 10px; }
+        .back-hint i { margin-right: 4px; }
+        .section-label { font-size: 13px; font-weight: 600; color: #4f453a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .section-label i { color: #a67c52; }
+
+        .stamp-flower {
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 4px;
+            animation: flowerPop 0.4s ease-out;
+        }
+        @keyframes flowerPop {
+            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+            70% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        @media (max-width: 420px) {
+            .district-grid { grid-template-columns: 1fr 1fr; }
+            .route-selector { grid-template-columns: 1fr 1fr; }
+            .district-card { font-size: 12px; padding: 10px 4px; }
+            .route-card { font-size: 11px; padding: 8px 4px; }
+            #overviewPanel .district-list { grid-template-columns: 1fr; }
+            .map-pin { flex-wrap: wrap; }
+            .stamp-btn { width: 100%; margin-top: 4px; }
+            .app-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== 全新標題 ===== -->
+<div class="app-header">
+    <h1>
+        <i class="fas fa-stamp"></i> Move. Learn. Bloom.
+    </h1>
+    <div class="sub">✦ 躍動 · 發現 · 綻放 ✦</div>
+    <div class="tagline">
+        <span class="move">行一步</span> <span>·</span>
+        <span class="learn">學一課</span> <span>·</span>
+        <span class="bloom">開一朵花</span>
+    </div>
+</div>
+
+<div class="tab-bar">
+    <div class="tab-btn active" data-tab="map" id="tabMap"><i class="fas fa-map-marked-alt"></i> 地區遊</div>
+    <div class="tab-btn" data-tab="overview" id="tabOverview"><i class="fas fa-chart-simple"></i> 總進度</div>
+</div>
+
+<div id="mapPanel">
+    <div class="section-label"><i class="fas fa-map-marker-alt"></i> 揀地區</div>
+    <div class="district-grid" id="districtGrid"></div>
+
+    <div class="section-label"><i class="fas fa-route"></i> 揀路線</div>
+    <div class="route-selector" id="routeSelector"></div>
+
+    <div class="map-container">
+        <div class="map-title">
+            <span><i class="fas fa-map-pin" style="color:#a67c52;"></i> <span id="districtNameDisplay">尖沙咀</span>景點</span>
+            <span style="font-size:12px;"><i class="fas fa-flag-checkered"></i> 蓋章收集</span>
+        </div>
+        <div class="map-grid" id="mapGrid"></div>
+    </div>
+
+    <div class="progress-area">
+        <div>
+            <div class="count"><span id="stampCount">0</span> / <span id="totalSpots">0</span> 個印章</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+        </div>
+        <div style="font-size:13px; color:#5f5345;"><i class="fas fa-award"></i> <span id="badgeDisplay">🌱 起步者</span></div>
+    </div>
+
+    <div class="legend">
+        <span><i class="fas fa-restroom"></i> 公廁</span>
+        <span><i class="fas fa-parking"></i> 停車場</span>
+        <span><i class="fas fa-bus"></i> 公交站</span>
+        <span><i class="fas fa-wheelchair"></i> 無障礙</span>
+        <span><i class="fas fa-baby"></i> 育嬰室</span>
+        <span><i class="fas fa-paw"></i> 寵物友善</span>
+        <span>🌸 已蓋章</span>
+    </div>
+</div>
+
+<div id="overviewPanel">
+    <div class="overview-stats">
+        <div class="stat-box"><div class="num" id="totalDistricts">0</div><div class="label">已開發地區</div></div>
+        <div class="stat-box"><div class="num" id="totalSpotsAll">0</div><div class="label">總景點數</div></div>
+        <div class="stat-box"><div class="num" id="totalStampsAll">0</div><div class="label">已蓋章</div></div>
+    </div>
+    <div class="section-label"><i class="fas fa-list"></i> 各地區進度</div>
+    <div class="district-list" id="overviewList"></div>
+</div>
+
+<div class="toast-message" id="toastMsg"><i class="fas fa-check-circle"></i> 蓋章成功！</div>
+<div class="back-hint"><i class="fas fa-arrow-up"></i> 點擊地區或路線可切換</div>
+
+<script>
+    // ============================================================
+    // 1. 地區色系配置（不變）
+    // ============================================================
+    const colorMap = {
+        tst: { primary: '#E8485B', light: '#FCE8EA', name: 'tst' },
+        kc: { primary: '#F5A623', light: '#FEF3E0', name: 'kc' },
+        southern: { primary: '#2196F3', light: '#E3F2FD', name: 'southern' },
+        ssp: { primary: '#9C27B0', light: '#F3E5F5', name: 'ssp' },
+        sk: { primary: '#4CAF50', light: '#E8F5E9', name: 'sk' },
+        tp: { primary: '#FF6F00', light: '#FFF3E0', name: 'tp' }
+    };
+
+    // ============================================================
+    // 2. 資料庫 — 6 個地區
+    //    （景點資料保持不變，只更新了標題）
+    // ============================================================
+    const districtData = {
+        tst: {
+            name: '尖沙咀',
+            icon: 'fa-water',
+            colorKey: 'tst',
+            spots: [
+                { id: 'tst1', name: '星光大道', desc: '李小龍銅像 · 維港海景', icon: 'fa-star', facilities: ['廁所','公交'], wheelchair: true, rental: 'K11 MUSEA 禮賓部 (HK$500按金)', silverTip: '平路、有長椅，海風舒適。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst2', name: '香港文化中心', desc: '鐘樓 · 藝術展覽', icon: 'fa-landmark', facilities: ['廁所','公交'], wheelchair: true, rental: '文化中心詢問處 (免費)', silverTip: '室內有冷氣、升降機。', babyRoom: true, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst3', name: '海港城海運大廈', desc: '觀景台 · 郵輪碼頭', icon: 'fa-ship', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '海港城客戶服務櫃檯', silverTip: '商場通道寬敞，多處有座位。', babyRoom: true, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst4', name: '九龍公園', desc: '鳥湖 · 百年榕樹', icon: 'fa-tree', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '公園辦事處查詢', silverTip: '大量樹蔭長椅，平坦路徑。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst5', name: '1881 Heritage', desc: '前水警總部 · 古蹟', icon: 'fa-clock', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '商場禮賓部 (需按金)', silverTip: '部分有斜道，可查詢無障礙路線。', babyRoom: true, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst6', name: '天星小輪碼頭', desc: '維港渡輪 · 懷舊之旅', icon: 'fa-ship', facilities: ['廁所','公交'], wheelchair: true, rental: '碼頭詢問處', silverTip: '平路直達，碼頭內有長椅。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tst7', name: '尖沙咀清真寺', desc: '九龍最大清真寺', icon: 'fa-mosque', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '清真寺管理處 (需預約)', silverTip: '設有無障礙通道。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['tst1','tst6','tst5','tst2','tst3','tst4','tst7'], intro: '💕 海濱漫步 · 二人世界' },
+                family: { label: '親子', order: ['tst4','tst2','tst7','tst1','tst6','tst3','tst5'], intro: '👨‍👩‍👧‍👦 放電學習 · 親子同樂' },
+                friends: { label: '朋友', order: ['tst3','tst1','tst4','tst5','tst7','tst6','tst2'], intro: '📸 打卡熱點 · 好友同遊' },
+                silver: { label: '銀髮', order: ['tst4','tst2','tst1','tst6','tst5','tst7','tst3'], intro: '🧓 懷舊慢活 · 舒適出行' }
+            }
+        },
+        kc: {
+            name: '九龍城',
+            icon: 'fa-city',
+            colorKey: 'kc',
+            spots: [
+                { id: 'kc1', name: '九龍寨城公園', desc: '三級歷史建築 · 古蹟', icon: 'fa-archway', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '公園辦事處 (需登記)', silverTip: '公園內平路為主，有大量長椅。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'kc2', name: '侯王廟', desc: '一級歷史建築 · 南宋古廟', icon: 'fa-church', facilities: ['廁所','公交'], wheelchair: true, rental: '廟宇管理處查詢', silverTip: '廟前廣場平坦，有座位。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'kc3', name: '九龍城廣場', desc: '區內地標 · 美食集中地', icon: 'fa-shopping-mall', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '商場客戶服務櫃檯', silverTip: '商場通道寬敞，多處有座位。', babyRoom: true, petFriendly: 'yes', petLabel: '🐶 寵物友善 (寵物車外借)' },
+                { id: 'kc4', name: '衙前圍村', desc: '市區僅存圍村 · 歷史遺址', icon: 'fa-city', facilities: ['廁所','公交'], wheelchair: true, rental: '附近社區中心查詢', silverTip: '圍村周邊有少量長椅。', babyRoom: false, petFriendly: 'no', petLabel: '❌ 不建議帶寵物' },
+                { id: 'kc5', name: '啟德機場跑道公園', desc: '舊機場跑道 · 海景日落', icon: 'fa-plane', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '公園管理處查詢', silverTip: '跑道全程平坦，有觀景長椅。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (寵物共享公園)' },
+                { id: 'kc6', name: '九龍仔公園', desc: '大型公園 · 寵物友善', icon: 'fa-tree', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '公園辦事處查詢', silverTip: '設有長者健身園地、緩跑徑。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (設寵物公園)' },
+                { id: 'kc7', name: '石屋家園', desc: '三級歷史建築 · 文化展覽', icon: 'fa-home', facilities: ['廁所','公交'], wheelchair: true, rental: '石屋家園辦事處查詢', silverTip: '展覽館室內有冷氣及座位。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (戶外茶座)' },
+                { id: 'kc8', name: '格仔山', desc: '紅白格仔地標 · 打卡熱點', icon: 'fa-mountain', facilities: ['公交'], wheelchair: false, rental: '不適用（需步行上山）', silverTip: '需步行上樓梯約10分鐘，非輪椅友善。', babyRoom: false, petFriendly: 'caution', petLabel: '⚠️ 需行樓梯，不建議帶寵物' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['kc6','kc1','kc7','kc5','kc8'], intro: '💕 寧靜散步→古蹟→咖啡→海景→打卡' },
+                family: { label: '親子', order: ['kc6','kc1','kc7','kc3','kc5'], intro: '👨‍👩‍👧‍👦 公園放電→學習→體驗→休息→野餐' },
+                friends: { label: '朋友', order: ['kc2','kc4','kc1','kc3','kc7'], intro: '👯 古廟→圍村→寨城→美食→咖啡' },
+                silver: { label: '銀髮', order: ['kc1','kc2','kc7','kc3','kc6'], intro: '🧓 慢行古蹟→參拜→嘆啡→休息→散步' }
+            }
+        },
+        southern: {
+            name: '南區',
+            icon: 'fa-umbrella-beach',
+            colorKey: 'southern',
+            spots: [
+                { id: 's1', name: '香港仔避風塘', desc: '活着的漁港 · 舢舨穿梭', icon: 'fa-ship', facilities: ['廁所','公交'], wheelchair: true, rental: '香港仔海濱公園辦事處', silverTip: '海旁有長椅，可觀賞漁船。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (海濱長廊)' },
+                { id: 's2', name: '流記艇仔粉', desc: '全港唯一海上粉艇', icon: 'fa-utensils', facilities: ['公交'], wheelchair: false, rental: '不適用（需於岸邊購買）', silverTip: '坐石壆食粉麵，體驗地道風味。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 's3', name: '赤柱海濱長廊', desc: '海岸步道 · 歐陸風情', icon: 'fa-water', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '赤柱廣場客戶服務櫃檯', silverTip: '平路沿海，有大量長椅及餐廳。', babyRoom: true, petFriendly: 'yes', petLabel: '🐶 寵物友善 (海濱長廊)' },
+                { id: 's4', name: '南區海濱長廊', desc: '香港仔至深水灣 · 海景步道', icon: 'fa-road', facilities: ['廁所','公交'], wheelchair: true, rental: '沿途公園辦事處查詢', silverTip: '平坦步道，沿途有觀景台。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (寵物共享公園)' },
+                { id: 's5', name: '赤柱卜公碼頭', desc: '公眾碼頭 · 往返蒲台島街渡 · 歷史建築', icon: 'fa-anchor', facilities: ['廁所','公交'], wheelchair: true, rental: '赤柱碼頭辦事處查詢', silverTip: '碼頭平坦，有長椅可休息。可乘街渡前往蒲台島（週末及假日服務）。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (碼頭範圍)' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['s3','s5','s1','s4','s2'], intro: '💕 赤柱漫步→碼頭懷舊→漁港日落→海濱步道→地道小食' },
+                family: { label: '親子', order: ['s3','s5','s1','s4','s2'], intro: '👨‍👩‍👧‍👦 海濱玩樂→碼頭參觀→漁港體驗→步道散步→艇仔粉' },
+                friends: { label: '朋友', order: ['s3','s5','s1','s2','s4'], intro: '👯 赤柱打卡→碼頭懷舊→漁港參觀→地道美食→海邊傾偈' },
+                silver: { label: '銀髮', order: ['s1','s5','s3','s4','s2'], intro: '🧓 漁港慢賞→碼頭長椅→赤柱漫步→步道散步→試地道小食' }
+            }
+        },
+        ssp: {
+            name: '深水埗',
+            icon: 'fa-store',
+            colorKey: 'ssp',
+            spots: [
+                { id: 'ss1', name: '美荷樓生活館', desc: '第一代公屋 · 歷史展覽', icon: 'fa-home', facilities: ['廁所','公交'], wheelchair: true, rental: '美荷樓接待處 (需登記)', silverTip: '室內展覽有冷氣、座位。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'ss2', name: '賽馬會創意藝術中心 JCCAC', desc: '舊廠廈活化 · 藝術村', icon: 'fa-palette', facilities: ['廁所','公交'], wheelchair: true, rental: '中心詢問處 (需登記)', silverTip: '設有升降機，室內參觀。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'ss3', name: '鴨寮街', desc: '男人街 · 電子零件集中地', icon: 'fa-microchip', facilities: ['廁所','公交'], wheelchair: true, rental: '附近商場查詢', silverTip: '街道平坦，建議平日早上前往。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'ss4', name: '北河街街市', desc: '地道街市 · 市井日常', icon: 'fa-store', facilities: ['廁所','公交'], wheelchair: true, rental: '街市辦事處查詢', silverTip: '人多擠迫，建議早上前往。', babyRoom: false, petFriendly: 'no', petLabel: '❌ 街市不適合帶寵物' },
+                { id: 'ss5', name: '嘉頓山', desc: '市區小山 · 九龍全景', icon: 'fa-mountain', facilities: ['公交'], wheelchair: false, rental: '不適用（需行樓梯）', silverTip: '需步行樓梯約15分鐘，非輪椅友善。', babyRoom: false, petFriendly: 'caution', petLabel: '⚠️ 需行樓梯，不建議帶寵物' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['ss1','ss2','ss5','ss3','ss4'], intro: '💕 懷舊展覽→藝術村→小山日落→市集尋寶' },
+                family: { label: '親子', order: ['ss1','ss2','ss3','ss4','ss5'], intro: '👨‍👩‍👧‍👦 歷史學習→藝術體驗→市集探索→街市體驗' },
+                friends: { label: '朋友', order: ['ss2','ss3','ss5','ss4','ss1'], intro: '👯 藝術打卡→尋寶樂趣→小山傾偈→地道美食' },
+                silver: { label: '銀髮', order: ['ss1','ss4','ss3','ss2','ss5'], intro: '🧓 懷舊展覽→街市買餸→尋寶回憶→藝術參觀' }
+            }
+        },
+        sk: {
+            name: '西貢',
+            icon: 'fa-fish',
+            colorKey: 'sk',
+            spots: [
+                { id: 'sk1', name: '西貢海濱長廊', desc: '海鮮街 · 碼頭風情', icon: 'fa-water', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '西貢碼頭詢問處', silverTip: '平路沿海，大量餐廳及長椅。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (海濱長廊)' },
+                { id: 'sk2', name: '西貢市集', desc: '漁民市集 · 地道手信', icon: 'fa-store', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '附近商場查詢', silverTip: '市集平坦，建議早上前往。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'sk3', name: '橋咀洲', desc: '連島沙洲 · 地質公園', icon: 'fa-island', facilities: ['廁所','公交'], wheelchair: false, rental: '不適用（需乘街渡）', silverTip: '需乘街渡及步行沙灘，非輪椅友善。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (需乘船)' },
+                { id: 'sk4', name: '獅子會自然教育中心', desc: '自然教育 · 親子好去處', icon: 'fa-tree', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '中心辦事處查詢', silverTip: '設有無障礙通道，適合家庭。', babyRoom: true, petFriendly: 'yes', petLabel: '🐶 寵物友善 (戶外範圍)' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['sk1','sk3','sk4','sk2'], intro: '💕 海濱散步→沙洲探險→自然漫步→市集尋寶' },
+                family: { label: '親子', order: ['sk4','sk1','sk2','sk3'], intro: '👨‍👩‍👧‍👦 自然教育→海濱玩樂→市集體驗→沙洲探險' },
+                friends: { label: '朋友', order: ['sk1','sk2','sk3','sk4'], intro: '👯 海鮮美食→市集打卡→沙洲探險→自然漫步' },
+                silver: { label: '銀髮', order: ['sk1','sk2','sk4','sk3'], intro: '🧓 海濱慢賞→市集回憶→自然散步→遠眺沙洲' }
+            }
+        },
+        tp: {
+            name: '大埔',
+            icon: 'fa-mountain',
+            colorKey: 'tp',
+            spots: [
+                { id: 'tp1', name: '大埔海濱公園', desc: '最大海濱公園 · 回歸紀念塔', icon: 'fa-tree', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '公園辦事處 (需登記)', silverTip: '平路為主，有大量長椅及涼亭。', babyRoom: true, petFriendly: 'yes', petLabel: '🐶 寵物友善 (寵物共享公園)' },
+                { id: 'tp2', name: '大埔墟街市', desc: '本地農產品 · 街坊日常', icon: 'fa-store', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '街市辦事處查詢', silverTip: '街市通道較窄，建議早上前往。', babyRoom: false, petFriendly: 'no', petLabel: '❌ 街市不適合帶寵物' },
+                { id: 'tp3', name: '林村許願樹', desc: '拋寶牒許願 · 祈福勝地', icon: 'fa-tree', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '附近商店查詢', silverTip: '平地為主，設有長椅。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (戶外範圍)' },
+                { id: 'tp4', name: '大埔舊墟', desc: '百年墟市 · 歷史建築', icon: 'fa-archway', facilities: ['廁所','公交'], wheelchair: true, rental: '社區中心查詢', silverTip: '歷史建築群，適合慢行參觀。', babyRoom: false, petFriendly: 'unknown', petLabel: '⚠️ 建議先查詢' },
+                { id: 'tp5', name: '船灣淡水湖', desc: '香港最大水塘 · 單車徑', icon: 'fa-water', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '附近鄉村俱樂部查詢', silverTip: '主壩平坦，沿途有觀景長椅。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (單車徑旁)' },
+                { id: 'tp6', name: '大美督人工海灘', desc: '人工泳灘 · 燒烤區 · 家庭樂', icon: 'fa-umbrella-beach', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '大美督管理處查詢', silverTip: '沙灘平坦設有無障礙通道，旁邊有燒烤場。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (沙灘及燒烤區)' },
+                { id: 'tp7', name: '大美督燒烤場', desc: '公眾燒烤場 · 海景BBQ', icon: 'fa-fire', facilities: ['廁所','停車','公交'], wheelchair: true, rental: '大美督管理處查詢', silverTip: '燒烤場平坦，設有長椅及遮蔭。', babyRoom: false, petFriendly: 'yes', petLabel: '🐶 寵物友善 (燒烤區)' }
+            ],
+            routes: {
+                romance: { label: '浪漫', order: ['tp1','tp5','tp6','tp7','tp2'], intro: '💕 海濱日落→水塘漫步→沙灘觀星→BBQ晚餐→街市尋寶' },
+                family: { label: '親子', order: ['tp1','tp6','tp7','tp5','tp2'], intro: '👨‍👩‍👧‍👦 公園放電→沙灘玩水→BBQ野餐→水塘散步→街市體驗' },
+                friends: { label: '朋友', order: ['tp1','tp6','tp7','tp5','tp2'], intro: '👯 海濱打卡→沙灘消暑→BBQ派對→水塘自駕→街市美食' },
+                silver: { label: '銀髮', order: ['tp1','tp4','tp3','tp5','tp2'], intro: '🧓 海濱慢賞→舊墟懷舊→許願祈福→水塘散步→街市買餸' }
+            }
+        }
+    };
+
+    const districtKeys = ['tst', 'kc', 'southern', 'ssp', 'sk', 'tp'];
+
+    // ============================================================
+    // 3. 狀態管理
+    // ============================================================
+    let stamps = {};
+    districtKeys.forEach(key => { if (!stamps[key]) stamps[key] = {}; });
+
+    let currentDistrict = 'tst';
+    let currentRoute = 'romance';
+
+    // ============================================================
+    // 4. DOM 參考
+    // ============================================================
+    const districtGrid = document.getElementById('districtGrid');
+    const routeSelector = document.getElementById('routeSelector');
+    const districtNameDisplay = document.getElementById('districtNameDisplay');
+    const mapGrid = document.getElementById('mapGrid');
+    const stampCountEl = document.getElementById('stampCount');
+    const totalSpotsEl = document.getElementById('totalSpots');
+    const progressFill = document.getElementById('progressFill');
+    const badgeDisplay = document.getElementById('badgeDisplay');
+    const toastMsg = document.getElementById('toastMsg');
+    const tabMap = document.getElementById('tabMap');
+    const tabOverview = document.getElementById('tabOverview');
+    const mapPanel = document.getElementById('mapPanel');
+    const overviewPanel = document.getElementById('overviewPanel');
+
+    // ============================================================
+    // 5. 核心函數
+    // ============================================================
+    function getDistrictStamp(dKey) {
+        if (!stamps[dKey]) stamps[dKey] = {};
+        return stamps[dKey];
+    }
+
+    function renderDistricts() {
+        let html = '';
+        districtKeys.forEach(key => {
+            const d = districtData[key];
+            if (!d) return;
+            const dStamps = getDistrictStamp(key);
+            const totalSpots = d.spots.length;
+            const done = d.spots.filter(s => dStamps[s.id]).length;
+            const pct = totalSpots > 0 ? Math.round((done / totalSpots) * 100) : 0;
+            let statusClass = '', statusText = '';
+            if (done === totalSpots && totalSpots > 0) { statusClass = 'completed'; statusText = '🌸 完成'; }
+            else if (done > 0) { statusClass = 'partial'; statusText = pct + '%'; }
+            else { statusText = '未開始'; }
+            const isActive = (key === currentDistrict);
+            const colorInfo = colorMap[key] || { primary: '#c79a6e', light: '#fcf8f4' };
+            html += `
+                <div class="district-card district-${key} ${statusClass} ${isActive ? 'active' : ''}" data-district="${key}">
+                    <i class="fas ${d.icon}" style="color: ${isActive ? colorInfo.primary : ''};"></i>
+                    ${d.name}
+                    <span class="badge">${d.spots.length}景點</span>
+                    <span class="progress-dot">${statusText}</span>
+                </div>
+            `;
+        });
+        districtGrid.innerHTML = html;
+        document.querySelectorAll('.district-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const key = this.dataset.district;
+                if (key && key !== currentDistrict) {
+                    currentDistrict = key;
+                    const routeKeys = Object.keys(districtData[key].routes);
+                    currentRoute = routeKeys[0] || 'romance';
+                    renderDistricts();
+                    renderRoutes();
+                    renderMap();
+                    updateOverview();
+                }
+            });
+        });
+    }
+
+    function renderRoutes() {
+        const d = districtData[currentDistrict];
+        if (!d) return;
+        const routeKeys = Object.keys(d.routes);
+        let html = '';
+        routeKeys.forEach(key => {
+            const r = d.routes[key];
+            const isActive = (key === currentRoute);
+            const iconMap = { 'romance': 'fa-heart', 'family': 'fa-child', 'friends': 'fa-users', 'silver': 'fa-walking' };
+            html += `
+                <div class="route-card ${isActive ? 'active' : ''}" data-route="${key}">
+                    <i class="fas ${iconMap[key] || 'fa-route'}"></i> ${r.label}
+                    <span class="badge">${r.order.length}</span>
+                </div>
+            `;
+        });
+        routeSelector.innerHTML = html;
+        document.querySelectorAll('.route-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const route = this.dataset.route;
+                if (route && route !== currentRoute) {
+                    currentRoute = route;
+                    renderRoutes();
+                    renderMap();
+                }
+            });
+        });
+    }
+
+    function renderMap() {
+        const d = districtData[currentDistrict];
+        if (!d) return;
+        const route = d.routes[currentRoute];
+        if (!route) return;
+        const colorInfo = colorMap[currentDistrict] || { primary: '#c79a6e', light: '#fcf8f4' };
+
+        districtNameDisplay.textContent = d.name;
+        progressFill.style.background = colorInfo.primary;
+
+        const dStamps = getDistrictStamp(currentDistrict);
+        const order = route.order;
+        let html = `<div style="font-size:12px; color:#4f453a; margin-bottom:8px; font-weight:500;">
+            <i class="fas fa-route"></i> ${route.intro}
+        </div>`;
+
+        order.forEach((spotId) => {
+            const spot = d.spots.find(s => s.id === spotId);
+            if (!spot) return;
+
+            const isStamped = dStamps[spotId] || false;
+            const stampClass = isStamped ? 'stamped' : '';
+            const stampText = isStamped ? '✅ 已蓋章' : '📍 蓋章';
+            const btnColorClass = `${currentDistrict}-btn`;
+
+            const flowerHtml = isStamped ? `<span class="stamp-flower">🌸</span>` : '';
+
+            let facilitiesHtml = spot.facilities.map(f => {
+                const iconMap = { '廁所': 'fa-restroom', '停車': 'fa-parking', '公交': 'fa-bus' };
+                return `<span><i class="fas ${iconMap[f] || 'fa-circle-check'}"></i> ${f}</span>`;
+            }).join('');
+
+            let babyHtml = (currentRoute === 'family' && spot.babyRoom) ? `<span><i class="fas fa-baby"></i> 育嬰室</span>` : '';
+            let wheelchairHtml = spot.wheelchair ?
+                `<span class="wheelchair-tip"><i class="fas fa-wheelchair"></i> 無障礙</span>` :
+                `<span class="wheelchair-tip" style="background:#f5d6d6; color:#8b3a3a;"><i class="fas fa-exclamation-triangle"></i> 需行樓梯</span>`;
+
+            let petHtml = '';
+            const petClassMap = { 'yes': 'pet-tip', 'caution': 'pet-tip caution', 'no': 'pet-tip no', 'unknown': 'pet-tip caution' };
+            if (spot.petFriendly) {
+                petHtml = `<span class="${petClassMap[spot.petFriendly] || 'pet-tip'}"><i class="fas fa-paw"></i> ${spot.petLabel}</span>`;
+            }
+
+            let specialNote = '';
+            if (spot.id === 's5') {
+                specialNote = `<div style="font-size:10px; color:#1a6b7a; background:#d4edf0; border-radius:30px; padding:2px 10px; display:inline-block; margin-top:2px;">
+                    <i class="fas fa-ferry"></i> 往返蒲台島街渡（週末及假日服務）
+                </div>`;
+            }
+
+            let rentalHtml = (currentRoute === 'silver' && spot.rental) ?
+                `<div style="font-size:10px; color:#005566; background:#e1eef0; border-radius:30px; padding:2px 10px; display:inline-block; margin-top:2px;">
+                    <i class="fas fa-hand-holding-heart"></i> ${spot.rental}
+                </div>` : '';
+
+            let silverExtra = (currentRoute === 'silver' && spot.silverTip) ?
+                `<div style="font-size:10px; color:#2d5f6b; background:#f0f3f0; border-radius:20px; padding:2px 10px; margin-top:2px;">
+                    <i class="fas fa-lightbulb"></i> ${spot.silverTip}
+                </div>` : '';
+
+            html += `
+                <div class="map-pin" style="border-left-color: ${isStamped ? colorInfo.primary : '#a0b8c5'};">
+                    <div class="pin-icon"><i class="fas ${spot.icon}" style="color: ${isStamped ? colorInfo.primary : '#1a3c4a'};"></i></div>
+                    <div class="pin-info">
+                        <div class="pin-name">${spot.name} ${flowerHtml}</div>
+                        <div class="pin-desc">${spot.desc}</div>
+                        <div class="facility-tags">${facilitiesHtml} ${wheelchairHtml} ${babyHtml} ${petHtml}</div>
+                        ${specialNote}
+                        ${rentalHtml}
+                        ${silverExtra}
+                    </div>
+                    <button class="stamp-btn ${btnColorClass} ${stampClass}" data-id="${spot.id}" ${isStamped ? 'disabled' : ''}>
+                        ${stampText}
+                    </button>
+                </div>
+            `;
+        });
+
+        mapGrid.innerHTML = html;
+        totalSpotsEl.textContent = order.length;
+
+        document.querySelectorAll('.stamp-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                handleStamp(id);
+            });
+        });
+
+        updateProgress();
+        updateOverview();
+    }
+
+    function handleStamp(spotId) {
+        const dStamps = getDistrictStamp(currentDistrict);
+        if (dStamps[spotId]) { showToast('已經蓋咗章啦！'); return; }
+        dStamps[spotId] = true;
+        showToast('🌸 蓋章成功！繼續 Move. Learn. Bloom. 🌸');
+        renderMap();
+        renderDistricts();
+        updateOverview();
+    }
+
+    function updateProgress() {
+        const d = districtData[currentDistrict];
+        if (!d) return;
+        const route = d.routes[currentRoute];
+        if (!route) return;
+        const dStamps = getDistrictStamp(currentDistrict);
+        const total = route.order.length;
+        const done = route.order.filter(id => dStamps[id]).length;
+        const percent = total > 0 ? (done / total) * 100 : 0;
+        stampCountEl.textContent = done;
+        progressFill.style.width = Math.min(percent, 100) + '%';
+        let badge = '🌱 起步者';
+        if (done === total && total > 0) badge = `🌸 ${d.name}通`;
+        else if (done >= Math.ceil(total * 0.6)) badge = '⭐ 探險家';
+        else if (done >= Math.ceil(total * 0.3)) badge = '🌱 初心者';
+        badgeDisplay.textContent = badge;
+    }
+
+    function updateOverview() {
+        let totalDistricts = 0, totalSpotsAll = 0, totalStampsAll = 0;
+        let listHtml = '';
+        districtKeys.forEach(key => {
+            const d = districtData[key];
+            if (!d) return;
+            const dStamps = getDistrictStamp(key);
+            const spots = d.spots;
+            const done = spots.filter(s => dStamps[s.id]).length;
+            const total = spots.length;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const colorInfo = colorMap[key] || { primary: '#d9d2c9' };
+            totalDistricts++; totalSpotsAll += total; totalStampsAll += done;
+            let statusIcon = '⏳', statusColor = '#d9d2c9';
+            if (done === total && total > 0) { statusIcon = '🌸'; statusColor = '#28a745'; }
+            else if (done > 0) { statusIcon = '🔄'; statusColor = colorInfo.primary; }
+            listHtml += `
+                <div class="district-item" style="border-left-color: ${statusColor};">
+                    <div>
+                        <div class="name"><i class="fas ${d.icon}" style="color:${colorInfo.primary}; width:18px;"></i> ${statusIcon} ${d.name}</div>
+                        <div class="progress-text">${done} / ${total} 景點</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:16px; font-weight:700; color:${colorInfo.primary};">${pct}%</div>
+                        <div class="mini-bar"><div class="fill" style="width:${pct}%; background:${colorInfo.primary};"></div></div>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('totalDistricts').textContent = totalDistricts;
+        document.getElementById('totalSpotsAll').textContent = totalSpotsAll;
+        document.getElementById('totalStampsAll').textContent = totalStampsAll;
+        document.getElementById('overviewList').innerHTML = listHtml;
+    }
+
+    function showToast(msg) {
+        toastMsg.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        toastMsg.classList.add('show');
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => { toastMsg.classList.remove('show'); }, 2500);
+    }
+
+    tabMap.addEventListener('click', function() {
+        this.classList.add('active');
+        tabOverview.classList.remove('active');
+        mapPanel.style.display = 'block';
+        overviewPanel.style.display = 'none';
+    });
+    tabOverview.addEventListener('click', function() {
+        this.classList.add('active');
+        tabMap.classList.remove('active');
+        mapPanel.style.display = 'none';
+        overviewPanel.style.display = 'block';
+        updateOverview();
+    });
+
+    renderDistricts();
+    renderRoutes();
+    renderMap();
+    updateOverview();
+    mapPanel.style.display = 'block';
+    overviewPanel.style.display = 'none';
+</script>
+
+</body>
+</html>
